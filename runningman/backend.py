@@ -36,16 +36,20 @@ class RunningManBackend:
 
     def set_mode(self, mode, overwrite=False):
         if self._mode and not overwrite:
-            raise Exception('backend mode is already set.  use overwrite=True or clear the mode')
-        if mode == 'batch':
+            raise Exception(
+                "backend mode is already set.  use overwrite=True or clear the mode"
+            )
+        if mode == "batch":
             mode = Batch(backend=self.backend)
             self._mode = mode
-        elif mode == 'session':
+        elif mode == "session":
             mode = Session(backend=self.backend)
             self._mode = mode
         elif isinstance(mode, (Batch, Session)):
             if mode.backend() != self.backend.name:
-                raise Exception(f'Input mode does not target backend {self.backend.name}')
+                raise Exception(
+                    f"Input mode does not target backend {self.backend.name}"
+                )
             self._mode = mode
         else:
             return getattr(self.backend, mode)
@@ -53,12 +57,12 @@ class RunningManBackend:
 
     def get_mode(self):
         return self._mode
-    
+
     def close_mode(self):
         if self._mode:
             self._mode.close()
         else:
-            raise Exception('No mode to close')
+            raise Exception("No mode to close")
 
     def clear_mode(self):
         self._mode = None
@@ -69,8 +73,9 @@ class RunningManBackend:
     def get_estimator(self):
         return ESTIMATOR(mode=self._mode if self._mode else self.backend)
 
-    def run(self, circuits, shots=None, job_tags=None, rep_delay=None,
-            init_qubits=True):
+    def run(
+        self, circuits, shots=None, job_tags=None, rep_delay=None, init_qubits=True
+    ):
         """Standard Qiskit run mode
 
         Parameters:
@@ -84,13 +89,11 @@ class RunningManBackend:
         if rep_delay:
             sampler.options.execution.rep_delay = rep_delay
         if job_tags:
-            job_tags.append('\u2003')
+            job_tags.append("\u2003")
         else:
-            job_tags = ['\u2003']
+            job_tags = ["\u2003"]
         sampler.options.environment.job_tags = job_tags
         if not isinstance(circuits, Iterable):
             circuits = [circuits]
         job = sampler.run(circuits, shots=shots)
-        return RunningManJob(job, executor='sampler')
-
-    
+        return RunningManJob(job, executor="sampler")
