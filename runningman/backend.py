@@ -74,7 +74,7 @@ class RunningManBackend:
         return ESTIMATOR(mode=self._mode if self._mode else self.backend)
 
     def run(
-        self, circuits, shots=None, job_tags=None, rep_delay=None, init_qubits=True
+        self, circuits, shots=None, job_tags=None, rep_delay=None, init_qubits=True, **kwargs
     ):
         """Standard Qiskit run mode
 
