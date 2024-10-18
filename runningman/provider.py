@@ -16,8 +16,8 @@ from runningman.backend import RunningManBackend
 
 
 class RunningManProvider:
-    """A provider that impliments the RunningMan interfaces
-    """
+    """A provider that impliments the RunningMan interfaces"""
+
     def __init__(self, *args, **kwargs):
         self.service = QiskitRuntimeService(*args, **kwargs)
 
