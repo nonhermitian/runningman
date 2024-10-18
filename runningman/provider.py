@@ -18,8 +18,8 @@ from runningman.backend import RunningManBackend
 class RunningManProvider:
     """A provider that impliments the RunningMan interfaces
     """
-    def __init__(self):
-        self.service = QiskitRuntimeService()
+    def __init__(self, *args, **kwargs):
+        self.service = QiskitRuntimeService(*args, **kwargs)
 
     def backend(self, name):
         backend = self.service.backend(name)
@@ -28,4 +28,3 @@ class RunningManProvider:
     def backends(self):
         backend_list = self.service.backends()
         return [RunningManBackend(back) for back in backend_list]
-    
