@@ -35,7 +35,7 @@ class RunningManJob:
     def result(self):
         """Get the result from a job
 
-        Adds a `get_counts` attr for backward compatibility
+        Adds a `get_counts` and `get_memory` attr for backward compatibility
 
         Returns:
             PrimitiveResult
