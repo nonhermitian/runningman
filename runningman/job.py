@@ -35,7 +35,7 @@ class RunningManJob:
     def result(self):
         """Get the result from a job
 
-        Adds a `get_counts` attr for backward compatibility
+        Adds a `get_counts` and `get_memory` attr for backward compatibility
 
         Returns:
             PrimitiveResult
@@ -46,6 +46,8 @@ class RunningManJob:
             res = self.job.result()
             setattr(res, "get_counts", _get_counts)
             res.get_counts = types.MethodType(_get_counts, res)
+            setattr(res, "get_memory", _get_memory)
+            res.get_memory = types.MethodType(_get_memory, res)
             self._result = res
             return res
 
@@ -68,7 +70,15 @@ def chunkstring(string, lengths):
 
 
 def _get_counts(self, experiment=None):
-    """Internal method to convert Runtime results to backend.run results"""
+    """Get the histogram data of an experiment.
+    
+    Parameters:
+        experiment (int or None): Index of the experiment, default=None
+    
+    Returns:
+        dict : Counts for a single experiment
+        list : List of dicts for each experiment in a multi-circuit job
+    """
     if experiment is None:
         exp_keys = range(len(self))
     else:
@@ -80,10 +90,45 @@ def _get_counts(self, experiment=None):
         chunks = [item[1].num_bits for item in item.data.items()][
             ::-1
         ]  # This is reversed for LSB ordering
-        out_data = {}
-        for key, val in combined_counts.items():
-            out_data[" ".join(chunkstring(key, chunks))] = val
-        out.append(Counts(out_data))
+        if len(chunks) > 1:
+            out_data = {}
+            for key, val in combined_counts.items():
+                out_data[" ".join(chunkstring(key, chunks))] = val
+            out.append(Counts(out_data))
+        else:
+            out.append(Counts(combined_counts))
+    if len(out) == 1:
+        return out[0]
+    return out
+
+
+def _get_memory(self, experiment=None):
+    """Get the sequence of memory states (readouts) for each shot
+    
+    Parameters:
+        experiment (int or None): Index of the experiment, default=None
+    
+    Returns:
+        list: List of strings representing the bitstrings for each shot
+    """
+    if experiment is None:
+        exp_keys = range(len(self))
+    else:
+        exp_keys = [experiment]
+    out = []
+    for idx in exp_keys:
+        item = self[idx]
+        combined_samples = item.join_data().get_bitstrings()
+        chunks = [item[1].num_bits for item in item.data.items()][
+            ::-1
+        ]  # This is reversed for LSB ordering
+        if len(chunks) > 1:
+            out_data = []
+            for bitstring in combined_samples:
+                out_data.append(" ".join(chunkstring(bitstring, chunks)))
+            out.append(out_data)
+        else:
+            out.append(combined_samples)
     if len(out) == 1:
         return out[0]
     return out
