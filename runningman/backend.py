@@ -11,7 +11,7 @@
 """RunningMan backend
 """
 from collections.abc import Iterable
-from qiskit_ibm_runtime import Batch, Session, SamplerV2, EstimatorV2
+from qiskit_ibm_runtime import Batch, Session, SamplerV2, EstimatorV2, IBMBackend
 
 from runningman.job import RunningManJob
 
@@ -20,7 +20,7 @@ SAMPLER = SamplerV2
 ESTIMATOR = EstimatorV2
 
 
-class RunningManBackend:
+class RunningManBackend(IBMBackend):
     def __init__(self, backend):
         self.backend = backend
         self._mode = None
@@ -35,6 +35,16 @@ class RunningManBackend:
         return out_str
 
     def set_mode(self, mode, overwrite=False):
+        """Set the execution mode for jobs from the backend
+
+        Parameters:
+            mode (str or Batch or Session): The mode to use for executing jobs
+            overwrite (bool): Allow for overwriting a mode without clearing it first
+
+        Returns:
+            Batch: If mode is a batch
+            Session: If mode is a session
+        """
         if self._mode and not overwrite:
             raise Exception(
                 "backend mode is already set.  use overwrite=True or clear the mode"
@@ -56,21 +66,42 @@ class RunningManBackend:
         return self._mode
 
     def get_mode(self):
+        """Return the current backend mode
+
+        Returns:
+            Batch: If mode is batch
+            Session: If mode is session
+            None: If no mode is set
+        """
         return self._mode
 
     def close_mode(self):
+        """Close the current backend mode, if any
+        """
         if self._mode:
             self._mode.close()
         else:
             raise Exception("No mode to close")
 
     def clear_mode(self):
+        """Clear the current mode from the backend
+        """
         self._mode = None
 
     def get_sampler(self):
+        """Return a sampler object that uses the backend and mode
+
+        Returns:
+            SamplerV2: Sampler targeting backend in the current execution mode
+        """
         return SAMPLER(mode=self._mode if self._mode else self.backend)
 
     def get_estimator(self):
+        """Return an estimator object that uses the backend and mode
+
+        Returns:
+            EstimatorV2: Estimator targeting backend in the current execution mode
+        """
         return ESTIMATOR(mode=self._mode if self._mode else self.backend)
 
     def run(

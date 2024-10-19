@@ -12,3 +12,4 @@ runningman is a package that takes care of a lot of this machinery in a single l
 > [!IMPORTANT]  
 > This package is for supporting my own projects, and nothing is guarenteed, save for the guarentee that nothing is guarenteed 
 
+See the tutorials folder.
