@@ -12,6 +12,7 @@
 """
 import types
 from qiskit.result import Counts
+from qiskit.primitives.containers import SamplerPubResult
 
 
 class RunningManJob:
@@ -20,17 +21,22 @@ class RunningManJob:
     Unlike the Runtime, the results are cached
     """
 
-    def __init__(self, job, executor):
+    def __init__(self, job):
         self.job = job
-        if executor not in ["sampler", "estimator"]:
-            raise ValueError("executor must be one of 'sampler' or 'estimator'")
-        self.executor = executor
         self._result = None  # cache the job result
+        self.executor = None
 
     def __getattr__(self, attr):
         if attr in self.__dict__:
             return self.__dict__[attr]
         return getattr(self.job, attr)
+    
+    def __repr__(self):
+        job_id = self.job.job_id()
+        backend_name = self.job.backend().name
+        executor = self.executor if self.executor else 'NA'
+        out_str = f"RunningManJob<job_id='{job_id}', backend_name='{backend_name}', executor='{executor}'>"
+        return out_str
 
     def result(self):
         """Get the result from a job
@@ -44,10 +50,14 @@ class RunningManJob:
             return self._result
         else:
             res = self.job.result()
-            setattr(res, "get_counts", _get_counts)
-            res.get_counts = types.MethodType(_get_counts, res)
-            setattr(res, "get_memory", _get_memory)
-            res.get_memory = types.MethodType(_get_memory, res)
+            if isinstance(res[0], SamplerPubResult):
+                setattr(res, "get_counts", _get_counts)
+                res.get_counts = types.MethodType(_get_counts, res)
+                setattr(res, "get_memory", _get_memory)
+                res.get_memory = types.MethodType(_get_memory, res)
+                self.executor = 'sampler'
+            else:
+                self.executor = 'estimator'
             self._result = res
             return res
 

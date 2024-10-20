@@ -119,12 +119,8 @@ class RunningManBackend(IBMBackend):
         sampler.options.execution.init_qubits = init_qubits
         if rep_delay:
             sampler.options.execution.rep_delay = rep_delay
-        if job_tags:
-            job_tags.append("\u2003")
-        else:
-            job_tags = ["\u2003"]
         sampler.options.environment.job_tags = job_tags
         if not isinstance(circuits, Iterable):
             circuits = [circuits]
         job = sampler.run(circuits, shots=shots)
-        return RunningManJob(job, executor="sampler")
+        return RunningManJob(job)
