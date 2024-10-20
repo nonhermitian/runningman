@@ -46,3 +46,14 @@ class RunningManProvider:
         """
         job = self.service.job(job_id)
         return RunningManJob(job)
+    
+    def jobs(self, *args, **kwargs):
+        """Retrieve runtime jobs with filtering.
+
+        Input arguments are the same as `QiskitRuntimeService.jobs()`
+      
+        Returns:
+            list: A list of RunnningManJobs 
+        """
+        jobs = self.service.jobs(*args, **kwargs)
+        return [RunningManJob(job) for job in jobs]
