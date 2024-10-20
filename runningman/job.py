@@ -24,11 +24,19 @@ class RunningManJob:
     def __init__(self, job):
         self.job = job
         self._result = None  # cache the job result
+        self.executor = None
 
     def __getattr__(self, attr):
         if attr in self.__dict__:
             return self.__dict__[attr]
         return getattr(self.job, attr)
+    
+    def __repr__(self):
+        job_id = self.job.job_id()
+        backend_name = self.job.backend().name
+        executor = self.executor if self.executor else 'NA'
+        out_str = f"RunningManJob<job_id='{job_id}', backend_name='{backend_name}', executor='{executor}'>"
+        return out_str
 
     def result(self):
         """Get the result from a job
@@ -47,6 +55,9 @@ class RunningManJob:
                 res.get_counts = types.MethodType(_get_counts, res)
                 setattr(res, "get_memory", _get_memory)
                 res.get_memory = types.MethodType(_get_memory, res)
+                self.executor = 'sampler'
+            else:
+                self.executor = 'estimator'
             self._result = res
             return res
 
