@@ -127,4 +127,4 @@ class RunningManBackend(IBMBackend):
         if not isinstance(circuits, Iterable):
             circuits = [circuits]
         job = sampler.run(circuits, shots=shots)
-        return RunningManJob(job, executor="sampler")
+        return RunningManJob(job)

@@ -12,6 +12,7 @@
 """
 import types
 from qiskit.result import Counts
+from qiskit.primitives.containers import SamplerPubResult
 
 
 class RunningManJob:
@@ -20,11 +21,8 @@ class RunningManJob:
     Unlike the Runtime, the results are cached
     """
 
-    def __init__(self, job, executor):
+    def __init__(self, job):
         self.job = job
-        if executor not in ["sampler", "estimator"]:
-            raise ValueError("executor must be one of 'sampler' or 'estimator'")
-        self.executor = executor
         self._result = None  # cache the job result
 
     def __getattr__(self, attr):
@@ -44,10 +42,11 @@ class RunningManJob:
             return self._result
         else:
             res = self.job.result()
-            setattr(res, "get_counts", _get_counts)
-            res.get_counts = types.MethodType(_get_counts, res)
-            setattr(res, "get_memory", _get_memory)
-            res.get_memory = types.MethodType(_get_memory, res)
+            if isinstance(res[0], SamplerPubResult):
+                setattr(res, "get_counts", _get_counts)
+                res.get_counts = types.MethodType(_get_counts, res)
+                setattr(res, "get_memory", _get_memory)
+                res.get_memory = types.MethodType(_get_memory, res)
             self._result = res
             return res
 
