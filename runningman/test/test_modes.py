@@ -32,3 +32,4 @@ def test_run_modes():
     provider = PROVIDER
     job2 = provider.job(job.job_id())
     assert job2.session_id == mode.session_id
+    BACKEND.clear_mode()
