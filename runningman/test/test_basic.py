@@ -23,11 +23,11 @@ def test_run_basics():
     qc.measure_all()
 
     trans_qc = transpile(qc, BACKEND)
-    job = BACKEND.run(trans_qc, shots=1234)
+    job = BACKEND.run(trans_qc, shots=135)
     runningman.test.TEMP_JOB_ID = job.job_id()
     assert job.backend().name == runningman.test.BACKEND.name
     counts = job.result().get_counts()
-    assert sum(counts.values()) == 1234
+    assert sum(counts.values()) == 135
     assert len(next(iter(counts))) == 5
 
 
@@ -46,9 +46,9 @@ def test_run_two_cregs1():
     qc.measure([2,3,4], cr2)
 
     trans_qc = transpile(qc, BACKEND)
-    job = BACKEND.run(trans_qc, shots=1234)
+    job = BACKEND.run(trans_qc, shots=135)
     counts = job.result().get_counts()
-    assert sum(counts.values()) == 1234
+    assert sum(counts.values()) == 135
     key = next(iter(counts))
     key_chunks = key.split(' ')
     assert len(key_chunks[0]) == 3
@@ -70,9 +70,9 @@ def test_run_two_cregs2():
     qc.measure([2,3,4], cr2)
 
     trans_qc = transpile(qc, BACKEND)
-    job = BACKEND.run(trans_qc, shots=1234)
+    job = BACKEND.run(trans_qc, shots=135)
     counts = job.result().get_counts()
-    assert sum(counts.values()) == 1234
+    assert sum(counts.values()) == 135
     key = next(iter(counts))
     key_chunks = key.split(' ')
     assert len(key_chunks[1]) == 3

@@ -16,8 +16,9 @@ def test_job_retrieval():
     """Test that a job has the correct properties"""
     provider = runningman.test.PROVIDER
     job = provider.job(runningman.test.TEMP_JOB_ID)
+
     assert job.backend().name == runningman.test.BACKEND.name
     assert isinstance(job, rm.job.RunningManJob)
     counts = job.result().get_counts()
-    assert sum(counts.values()) == 1234
+    assert sum(counts.values()) == 135
     assert len(next(iter(counts))) == 5
