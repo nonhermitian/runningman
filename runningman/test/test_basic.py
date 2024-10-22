@@ -8,6 +8,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 from qiskit import *
+import runningman.test
 from runningman.test import BACKEND
 
 
@@ -23,6 +24,8 @@ def test_run_basics():
 
     trans_qc = transpile(qc, BACKEND)
     job = BACKEND.run(trans_qc, shots=1234)
+    runningman.test.TEMP_JOB_ID = job.job_id()
+    assert job.backend().name == runningman.test.BACKEND.name
     counts = job.result().get_counts()
     assert sum(counts.values()) == 1234
     assert len(next(iter(counts))) == 5
