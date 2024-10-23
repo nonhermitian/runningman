@@ -16,10 +16,10 @@ def test_run_basics():
     """Test backend.run basics"""
     qc = QuantumCircuit(5)
     qc.h(2)
-    qc.cx(2,1)
-    qc.cx(1,0)
-    qc.cx(2,3)
-    qc.cx(3,4)
+    qc.cx(2, 1)
+    qc.cx(1, 0)
+    qc.cx(2, 3)
+    qc.cx(3, 4)
     qc.measure_all()
 
     trans_qc = transpile(qc, BACKEND)
@@ -38,19 +38,19 @@ def test_run_two_cregs1():
     cr2 = ClassicalRegister(3)
     qc = QuantumCircuit(qr, cr1, cr2)
     qc.h(2)
-    qc.cx(2,1)
-    qc.cx(1,0)
-    qc.cx(2,3)
-    qc.cx(3,4)
-    qc.measure([0,1], cr1)
-    qc.measure([2,3,4], cr2)
+    qc.cx(2, 1)
+    qc.cx(1, 0)
+    qc.cx(2, 3)
+    qc.cx(3, 4)
+    qc.measure([0, 1], cr1)
+    qc.measure([2, 3, 4], cr2)
 
     trans_qc = transpile(qc, BACKEND)
     job = BACKEND.run(trans_qc, shots=135)
     counts = job.result().get_counts()
     assert sum(counts.values()) == 135
     key = next(iter(counts))
-    key_chunks = key.split(' ')
+    key_chunks = key.split(" ")
     assert len(key_chunks[0]) == 3
     assert len(key_chunks[1]) == 2
 
@@ -62,18 +62,18 @@ def test_run_two_cregs2():
     cr2 = ClassicalRegister(3)
     qc = QuantumCircuit(qr, cr2, cr1)
     qc.h(2)
-    qc.cx(2,1)
-    qc.cx(1,0)
-    qc.cx(2,3)
-    qc.cx(3,4)
-    qc.measure([0,1], cr1)
-    qc.measure([2,3,4], cr2)
+    qc.cx(2, 1)
+    qc.cx(1, 0)
+    qc.cx(2, 3)
+    qc.cx(3, 4)
+    qc.measure([0, 1], cr1)
+    qc.measure([2, 3, 4], cr2)
 
     trans_qc = transpile(qc, BACKEND)
     job = BACKEND.run(trans_qc, shots=135)
     counts = job.result().get_counts()
     assert sum(counts.values()) == 135
     key = next(iter(counts))
-    key_chunks = key.split(' ')
+    key_chunks = key.split(" ")
     assert len(key_chunks[1]) == 3
     assert len(key_chunks[0]) == 2

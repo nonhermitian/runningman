@@ -13,6 +13,6 @@ import runningman as rm
 
 PROVIDER = rm.RunningManProvider()
 # Get backend from env var or default to open Brisbane
-BACKEND = PROVIDER.backend(os.environ.get('RM_BACKEND', 'ibm_brisbane'))
+BACKEND = PROVIDER.backend(os.environ.get("RM_BACKEND", "ibm_brisbane"))
 # holder for a job id used across tests
 TEMP_JOB_ID = None
