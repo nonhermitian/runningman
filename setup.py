@@ -68,7 +68,7 @@ write_version_py()
 setuptools.setup(
     name="runningman",
     version=VERSION,
-    python_requires=">=3.10",
+    python_requires=">=3.9",
     packages=PACKAGES,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
@@ -84,6 +84,7 @@ setuptools.setup(
         "Operating System :: Microsoft :: Windows",
         "Operating System :: MacOS",
         "Operating System :: POSIX :: Linux",
+        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
