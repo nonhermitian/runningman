@@ -10,14 +10,13 @@
 from qiskit import *
 from qiskit_ibm_runtime.fake_provider import FakeAthensV2
 
-from runningman.backend import RunningManBackend
 from runningman.test import BACKEND
 from runningman.utils import is_ibm_backend
 
 
 def test_test_is_ibm():
     """Verify IBM backend check works"""
-    assert is_ibm_backend(BACKEND)
+    assert is_ibm_backend(BACKEND.backend)
 
 
 def test_test_not_ibm():
@@ -26,7 +25,6 @@ def test_test_not_ibm():
     assert not is_ibm_backend(backend)
 
 
-def test_test_not_runningman():
+def test_not_runningman():
     """Verify RunningManBackend returns False"""
-    backend = RunningManBackend(BACKEND)
-    assert is_ibm_backend(backend)
+    assert not is_ibm_backend(BACKEND)
