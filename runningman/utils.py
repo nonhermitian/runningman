@@ -12,9 +12,11 @@
 """
 from qiskit_ibm_runtime import IBMBackend
 
+from runningman.backend import RunningManBackend
+
 
 def is_ibm_backend(backend):
-    """Check if a backend is an IBM backend
+    """Check if a backend is an IBM backend but not a RunningManBackend
 
     Simplifes instance checking in packages
 
@@ -24,6 +26,6 @@ def is_ibm_backend(backend):
     Returns:
         bool: True if backend is from IBM
     """
-    if isinstance(backend, IBMBackend):
+    if isinstance(backend, IBMBackend) and not isinstance(backend, RunningManBackend):
         return True
     return False
