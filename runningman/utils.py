@@ -20,7 +20,7 @@ def is_ibm_backend(backend):
 
     Parameters:
         backend (BackendV2 or BackendV1): A backend instance
-    
+
     Returns:
         bool: True if backend is from IBM
     """

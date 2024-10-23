@@ -15,13 +15,11 @@ from runningman.utils import is_ibm_backend
 
 
 def test_test_is_ibm():
-    """Verify IBM backend check works
-    """
+    """Verify IBM backend check works"""
     assert is_ibm_backend(BACKEND) == True
 
 
 def test_test_not_ibm():
-    """Verify IBM backend check returns False is not IBM backend
-    """
+    """Verify IBM backend check returns False is not IBM backend"""
     backend = FakeAthensV2()
     assert not is_ibm_backend(backend)

@@ -30,11 +30,11 @@ class RunningManJob:
         if attr in self.__dict__:
             return self.__dict__[attr]
         return getattr(self.job, attr)
-    
+
     def __repr__(self):
         job_id = self.job.job_id()
         backend_name = self.job.backend().name
-        executor = self.executor if self.executor else 'NA'
+        executor = self.executor if self.executor else "NA"
         out_str = f"RunningManJob<job_id='{job_id}', backend_name='{backend_name}', executor='{executor}'>"
         return out_str
 
@@ -55,9 +55,9 @@ class RunningManJob:
                 res.get_counts = types.MethodType(_get_counts, res)
                 setattr(res, "get_memory", _get_memory)
                 res.get_memory = types.MethodType(_get_memory, res)
-                self.executor = 'sampler'
+                self.executor = "sampler"
             else:
-                self.executor = 'estimator'
+                self.executor = "estimator"
             self._result = res
             return res
 
@@ -81,10 +81,10 @@ def chunkstring(string, lengths):
 
 def _get_counts(self, experiment=None):
     """Get the histogram data of an experiment.
-    
+
     Parameters:
         experiment (int or None): Index of the experiment, default=None
-    
+
     Returns:
         dict : Counts for a single experiment
         list : List of dicts for each experiment in a multi-circuit job
@@ -114,10 +114,10 @@ def _get_counts(self, experiment=None):
 
 def _get_memory(self, experiment=None):
     """Get the sequence of memory states (readouts) for each shot
-    
+
     Parameters:
         experiment (int or None): Index of the experiment, default=None
-    
+
     Returns:
         list: List of strings representing the bitstrings for each shot
     """

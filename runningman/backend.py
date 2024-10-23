@@ -76,16 +76,14 @@ class RunningManBackend(IBMBackend):
         return self._mode
 
     def close_mode(self):
-        """Close the current backend mode, if any
-        """
+        """Close the current backend mode, if any"""
         if self._mode:
             self._mode.close()
         else:
             raise Exception("No mode to close")
 
     def clear_mode(self):
-        """Clear the current mode from the backend
-        """
+        """Clear the current mode from the backend"""
         self._mode = None
 
     def get_sampler(self):
@@ -105,7 +103,13 @@ class RunningManBackend(IBMBackend):
         return ESTIMATOR(mode=self._mode if self._mode else self.backend)
 
     def run(
-        self, circuits, shots=None, job_tags=None, rep_delay=None, init_qubits=True, **kwargs
+        self,
+        circuits,
+        shots=None,
+        job_tags=None,
+        rep_delay=None,
+        init_qubits=True,
+        **kwargs,
     ):
         """Standard Qiskit run mode
 

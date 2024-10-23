@@ -15,15 +15,15 @@ def test_run_memory1():
     """Test getting memory from a job"""
     qc = QuantumCircuit(5)
     qc.h(2)
-    qc.cx(2,1)
-    qc.cx(1,0)
-    qc.cx(2,3)
-    qc.cx(3,4)
+    qc.cx(2, 1)
+    qc.cx(1, 0)
+    qc.cx(2, 3)
+    qc.cx(3, 4)
     qc.measure_all()
 
     trans_qc = transpile(qc, BACKEND)
     job = BACKEND.run(trans_qc, shots=135)
-    
+
     memory = job.result().get_memory()
     assert len(memory) == 135
     assert len(memory[0]) == 5
@@ -36,17 +36,17 @@ def test_run_memory2():
     cr2 = ClassicalRegister(3)
     qc = QuantumCircuit(qr, cr1, cr2)
     qc.h(2)
-    qc.cx(2,1)
-    qc.cx(1,0)
-    qc.cx(2,3)
-    qc.cx(3,4)
-    qc.measure([0,1], cr1)
-    qc.measure([2,3,4], cr2)
+    qc.cx(2, 1)
+    qc.cx(1, 0)
+    qc.cx(2, 3)
+    qc.cx(3, 4)
+    qc.measure([0, 1], cr1)
+    qc.measure([2, 3, 4], cr2)
 
     trans_qc = transpile(qc, BACKEND)
     job = BACKEND.run(trans_qc, shots=135)
     memory = job.result().get_memory()
     assert len(memory) == 135
-    key_chunks = memory[0].split(' ')
+    key_chunks = memory[0].split(" ")
     assert len(key_chunks[0]) == 3
     assert len(key_chunks[1]) == 2
