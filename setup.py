@@ -17,7 +17,7 @@ import setuptools
 
 
 MAJOR = 2
-MINOR = 2
+MINOR = 3
 MICRO = 0
 
 VERSION = "%d.%d.%d" % (MAJOR, MINOR, MICRO)
