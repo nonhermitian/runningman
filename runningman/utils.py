@@ -29,3 +29,20 @@ def is_ibm_backend(backend):
     if isinstance(backend, IBMBackend) and not isinstance(backend, RunningManBackend):
         return True
     return False
+
+
+def easy_wrap(backend):
+    """Easily wrap IBM backends only
+
+    Passes through any backend that is NOT and IBM device
+
+    Parameters:
+        backend (BackendV2 or BackendV1): A backend instance
+
+    Returns:
+        RunningManBackend: If input is an IBM backend
+        BackendV2 or BackendV1: If input is NOT an IBM backend
+    """
+    if is_ibm_backend(backend):
+        return RunningManBackend(backend)
+    return backend
