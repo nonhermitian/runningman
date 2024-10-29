@@ -10,11 +10,16 @@
 
 """RunningMan backend
 """
+import copy
 from collections.abc import Iterable
 from qiskit_ibm_runtime import Batch, Session, SamplerV2, EstimatorV2, IBMBackend
 
 from runningman.job import RunningManJob
-
+from runningman.options import (
+    default_execution_options,
+    default_suppression_options,
+    build_sampler_options,
+)
 
 SAMPLER = SamplerV2
 ESTIMATOR = EstimatorV2
@@ -24,6 +29,8 @@ class RunningManBackend(IBMBackend):
     def __init__(self, backend):
         self.backend = backend
         self._mode = None
+        self._execution_options = default_execution_options()
+        self._suppression_options = default_suppression_options()
 
     def __getattr__(self, attr):
         if attr in self.__dict__:
@@ -92,7 +99,12 @@ class RunningManBackend(IBMBackend):
         Returns:
             SamplerV2: Sampler targeting backend in the current execution mode
         """
-        return SAMPLER(mode=self._mode if self._mode else self.backend)
+        sampler_options = build_sampler_options(
+            self.get_execution_options(), self.get_suppression_options()
+        )
+        return SAMPLER(
+            mode=self._mode if self._mode else self.backend, options=sampler_options
+        )
 
     def get_estimator(self):
         """Return an estimator object that uses the backend and mode
@@ -101,6 +113,84 @@ class RunningManBackend(IBMBackend):
             EstimatorV2: Estimator targeting backend in the current execution mode
         """
         return ESTIMATOR(mode=self._mode if self._mode else self.backend)
+
+    def get_execution_options(self):
+        """Return the backend's execution options
+
+        Returns:
+            ExecutionOptions: A dict specifying execution options
+        """
+        return copy.deepcopy(self._execution_options)
+
+    def get_suppression_options(self):
+        """Return the backend's error suppression options
+
+        Returns:
+            SuppressionOptions: A dict specifying execution options
+        """
+        return copy.deepcopy(self._suppression_options)
+
+    def set_execution_options(self, execution=None, environment=None, simulator=None):
+        """Set the execution options of the backend
+
+        Parameters:
+            execution (dict): Dict of execution options
+            environment (dict): Dict of environment options
+            simulator (dict): Dict of simulator options
+        """
+        if execution and not isinstance(execution, dict):
+            raise TypeError("execution is not a dict")
+        if environment and not isinstance(environment, dict):
+            raise TypeError("environment is not a dict")
+        if simulator and not isinstance(simulator, dict):
+            raise TypeError("simulator is not a dict")
+
+        if execution:
+            for key, val in execution.items():
+                if key not in self._execution_options["execution"]:
+                    raise KeyError(f"Execution option {key} is not valid")
+                self._execution_options["execution"][key] = val
+
+        if environment:
+            for key, val in environment.items():
+                if key not in self._execution_options["environment"]:
+                    raise KeyError(f"Environment option {key} is not valid")
+                self._execution_options["environment"][key] = val
+
+        if simulator:
+            for key, val in simulator.items():
+                if key not in self._execution_options["simulator"]:
+                    raise KeyError(f"Simulator option {key} is not valid")
+                self._execution_options["simulator"][key] = val
+
+    def set_suppresion_options(self, dynamical_decoupling=None, twirling=None):
+        """Set the suppression options of the backend
+
+        Parameters:
+            dynamical_decoupling (dict): Dict of dynamical decoupling options
+            twirling (dict): Dict of Pauli twirling options
+        """
+        if dynamical_decoupling and not isinstance(dynamical_decoupling, dict):
+            raise TypeError("dynamical_decoupling is not a dict")
+        if twirling and not isinstance(twirling, dict):
+            raise TypeError("twirling is not a dict")
+
+        if dynamical_decoupling:
+            for key, val in dynamical_decoupling.items():
+                if key not in self._suppression_options["dynamical_decoupling"]:
+                    raise KeyError(f"Dynamical_decoupling option {key} is not valid")
+                self._suppression_options["dynamical_decoupling"][key] = val
+
+        if twirling:
+            for key, val in twirling.items():
+                if key not in self._suppression_options["twirling"]:
+                    raise KeyError(f"Twirling option {key} is not valid")
+                self._suppression_options["twirling"][key] = val
+
+    def reset_options(self):
+        """Reset all options to default values"""
+        self._execution_options = default_execution_options()
+        self._suppresion_options = default_suppression_options()
 
     def run(
         self,
