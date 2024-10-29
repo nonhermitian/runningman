@@ -10,6 +10,7 @@
 
 """RunningMan options
 """
+from qiskit_ibm_runtime import SamplerOptions
 
 
 class ExecutionOptions(dict):
@@ -43,9 +44,12 @@ def default_execution_options():
     out = ExecutionOptions(
         {
             "execution": {
-                "max_execution_time": None,
                 "default_shots": 4096,
                 "experimental": None,
+                "init_qubits": None,
+                "max_execution_time": None,
+                "meas_type": None,
+                "rep_delay": None,
             },
             "environment": {
                 "log_level": "WARNING",
@@ -62,4 +66,40 @@ def default_execution_options():
         }
     )
 
+    return out
+
+
+def build_sampler_options(execution_options):
+    """Build a SamplerOptions object from RunningMan options
+
+    Parameters:
+        execution_options (ExecutionOptions): Execution options
+
+    Returns:
+        SamplerOptions
+    """
+    execution_options = _deflate_options_dict(execution_options)
+    out = SamplerOptions()
+    for item, val in execution_options["execution"].items():
+        out.__dict__[item] = val
+    out.update(environment=execution_options["environment"])
+    out.update(simulator=execution_options["simulator"])
+    return out
+
+
+def _deflate_options_dict(options):
+    """Return a dict with all None values removed
+
+    Parameters:
+        options (dict): Input options dict
+
+    Returns:
+        dict: Output dict with None values removed
+    """
+    out = {}
+    for key in options:
+        out[key] = {}
+        for item, val in options[key].items():
+            if val is not None:
+                out[key][item] = val
     return out

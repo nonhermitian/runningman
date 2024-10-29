@@ -15,7 +15,7 @@ from collections.abc import Iterable
 from qiskit_ibm_runtime import Batch, Session, SamplerV2, EstimatorV2, IBMBackend
 
 from runningman.job import RunningManJob
-from runningman.options import default_execution_options
+from runningman.options import default_execution_options, build_sampler_options
 
 SAMPLER = SamplerV2
 ESTIMATOR = EstimatorV2
@@ -94,7 +94,10 @@ class RunningManBackend(IBMBackend):
         Returns:
             SamplerV2: Sampler targeting backend in the current execution mode
         """
-        return SAMPLER(mode=self._mode if self._mode else self.backend)
+        sampler_options = build_sampler_options(self.get_execution_options())
+        return SAMPLER(
+            mode=self._mode if self._mode else self.backend, options=sampler_options
+        )
 
     def get_estimator(self):
         """Return an estimator object that uses the backend and mode
@@ -105,9 +108,21 @@ class RunningManBackend(IBMBackend):
         return ESTIMATOR(mode=self._mode if self._mode else self.backend)
 
     def get_execution_options(self):
+        """Return the backend's execution options
+
+        Returns:
+            ExecutionOptions: A dict specifying execution options
+        """
         return copy.deepcopy(self.execution_options)
 
     def set_execution_options(self, execution=None, environment=None, simulator=None):
+        """Set the execution options of the backend
+
+        Parameters:
+            execution (dict): Dict of execution options
+            environment (dict): Dict of environment options
+            simulator (dict): Dict of simulator options
+        """
         if execution and not isinstance(execution, dict):
             raise TypeError("execution is not a dict")
         if environment and not isinstance(environment, dict):
@@ -115,20 +130,23 @@ class RunningManBackend(IBMBackend):
         if simulator and not isinstance(simulator, dict):
             raise TypeError("simulator is not a dict")
 
-        for key, val in execution.items():
-            if key not in self.execution_options["execution"]:
-                raise KeyError(f"Execution option {key} is not valid")
-            self.execution_options["execution"][key] = val
+        if execution:
+            for key, val in execution.items():
+                if key not in self.execution_options["execution"]:
+                    raise KeyError(f"Execution option {key} is not valid")
+                self.execution_options["execution"][key] = val
 
-        for key, val in environment.items():
-            if key not in self.execution_options["environment"]:
-                raise KeyError(f"Environment option {key} is not valid")
-            self.execution_options["environment"][key] = val
+        if environment:
+            for key, val in environment.items():
+                if key not in self.execution_options["environment"]:
+                    raise KeyError(f"Environment option {key} is not valid")
+                self.execution_options["environment"][key] = val
 
-        for key, val in simulator.items():
-            if key not in self.execution_options["simulator"]:
-                raise KeyError(f"Simulator option {key} is not valid")
-            self.execution_options["simulator"][key] = val
+        if simulator:
+            for key, val in simulator.items():
+                if key not in self.execution_options["simulator"]:
+                    raise KeyError(f"Simulator option {key} is not valid")
+                self.execution_options["simulator"][key] = val
 
     def run(
         self,
