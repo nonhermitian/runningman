@@ -11,15 +11,25 @@
 """RunningMan provider
 """
 from qiskit_ibm_runtime import QiskitRuntimeService
+import status_symbol as ss
 
 from runningman.backend import RunningManBackend
 from runningman.job import RunningManJob
 
+_rt_check_done = [False]
 
-class RunningManProvider:
+class RunningManProvider():
     """A provider that impliments the RunningMan interfaces"""
 
     def __init__(self, *args, **kwargs):
+        # Look for updated Qiskit-Runtime
+        disabled = ss.configuration.is_disabled('qiskit-ibm-runtime')
+        if not disabled and not _rt_check_done[0]:
+            update_available, versions = ss.pypi_version_check('qiskit-ibm-runtime')
+            ss.emit_update_warning('qiskit-ibm-runtime',
+                                   versions) if update_available else None
+            _rt_check_done[0] = True
+        # Load service
         self.service = QiskitRuntimeService(*args, **kwargs)
 
     def __getattr__(self, attr):

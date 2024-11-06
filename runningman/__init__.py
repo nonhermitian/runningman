@@ -16,6 +16,5 @@ try:
 except ImportError:
     __version__ = "0.0.0"
 
-
 from runningman.provider import RunningManProvider
 from runningman.backend import RunningManBackend

@@ -1,1 +1,2 @@
 qiskit_ibm_runtime>=0.22
+status-symbol>=1.0.1
