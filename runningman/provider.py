@@ -27,12 +27,17 @@ class RunningManProvider:
             return self.__dict__[attr]
         return getattr(self.service, attr)
 
-    def backend(self, name):
-        backend = self.service.backend(name)
+    def backend(self, name, *args, **kwargs):
+        """An instance of the specified backend
+
+        Returns:
+            RunningManBackend
+        """
+        backend = self.service.backend(name, *args, **kwargs)
         return RunningManBackend(backend)
 
-    def backends(self):
-        backend_list = self.service.backends()
+    def backends(self, *args, **kwargs):
+        backend_list = self.service.backends(*args, **kwargs)
         return [RunningManBackend(back) for back in backend_list]
 
     def job(self, job_id):
