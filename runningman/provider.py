@@ -15,15 +15,6 @@ from qiskit_ibm_runtime import QiskitRuntimeService
 from runningman.backend import RunningManBackend
 from runningman.job import RunningManJob
 
-def copy_doc(copy_func):
-    """Copies the doc string of the given function to another. 
-    """
-    def wrapped(func):
-        func.__doc__ = copy_func.__doc__
-        return func
-
-    return wrapped
-
 
 class RunningManProvider:
     """A provider that impliments the RunningMan interfaces"""
