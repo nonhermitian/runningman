@@ -15,6 +15,15 @@ from qiskit_ibm_runtime import QiskitRuntimeService
 from runningman.backend import RunningManBackend
 from runningman.job import RunningManJob
 
+def copy_doc(copy_func):
+    """Copies the doc string of the given function to another. 
+    """
+    def wrapped(func):
+        func.__doc__ = copy_func.__doc__
+        return func
+
+    return wrapped
+
 
 class RunningManProvider:
     """A provider that impliments the RunningMan interfaces"""
@@ -28,15 +37,14 @@ class RunningManProvider:
         return getattr(self.service, attr)
 
     def backend(self, name, *args, **kwargs):
-        """An instance of the specified backend
-
-        Returns:
-            RunningManBackend
+        """Get an instance of a backend
         """
         backend = self.service.backend(name, *args, **kwargs)
         return RunningManBackend(backend)
 
     def backends(self, *args, **kwargs):
+        """List available backends, with optional filtering
+        """
         backend_list = self.service.backends(*args, **kwargs)
         return [RunningManBackend(back) for back in backend_list]
 
