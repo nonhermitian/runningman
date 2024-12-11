@@ -28,14 +28,12 @@ class RunningManProvider:
         return getattr(self.service, attr)
 
     def backend(self, name, *args, **kwargs):
-        """Get an instance of a backend
-        """
+        """Get an instance of a backend"""
         backend = self.service.backend(name, *args, **kwargs)
         return RunningManBackend(backend)
 
     def backends(self, *args, **kwargs):
-        """List available backends, with optional filtering
-        """
+        """List available backends, with optional filtering"""
         backend_list = self.service.backends(*args, **kwargs)
         return [RunningManBackend(back) for back in backend_list]
 

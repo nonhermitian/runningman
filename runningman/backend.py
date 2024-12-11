@@ -93,7 +93,7 @@ class RunningManBackend(IBMBackend):
 
     def clear_mode(self):
         """Clear the current mode from the backend
-        
+
         Will close any mode that currently exists.
 
         """
