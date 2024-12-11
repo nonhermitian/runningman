@@ -56,6 +56,8 @@ class RunningManBackend(IBMBackend):
             raise Exception(
                 "backend mode is already set.  use overwrite=True or clear the mode"
             )
+        if self._mode:
+            self.close_mode()
         if mode == "batch":
             mode = Batch(backend=self.backend)
             self._mode = mode
@@ -90,7 +92,13 @@ class RunningManBackend(IBMBackend):
             raise Exception("No mode to close")
 
     def clear_mode(self):
-        """Clear the current mode from the backend"""
+        """Clear the current mode from the backend
+
+        Will close any mode that currently exists.
+
+        """
+        if self._mode:
+            self._mode.close()
         self._mode = None
 
     def get_sampler(self):

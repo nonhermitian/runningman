@@ -23,4 +23,3 @@ def test_backends_kwargs2():
     provider = runningman.test.PROVIDER
     backends = provider.backends(min_num_qubits=int(1e12))
     assert not any(backends)
-
