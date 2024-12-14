@@ -225,7 +225,7 @@ class RunningManBackend(IBMBackend):
         if not isinstance(circuits, Iterable):
             circuits = [circuits]
         job = sampler.run(circuits, shots=shots)
-        mode_id = None
-        if self._mode:
-            mode_id = self._mode.session_id
-        return RunningManJob(job, mode_id=mode_id)
+        mode_id = self._mode.session_id if self._mode else None
+        if mode_id != job.session_id:
+            raise ValueError('Backend mode_id does not equal job.session_id')
+        return RunningManJob(job)
