@@ -15,6 +15,11 @@ from qiskit.result import Counts
 from qiskit.primitives.containers import SamplerPubResult
 
 
+class RunningManStr(str):
+    def __call__(self):
+        return self
+
+
 class RunningManJob:
     """A wrapper around Sampler jobs that allows for getting counts from backend.run
 
@@ -24,9 +29,8 @@ class RunningManJob:
     def __init__(self, job):
         self.job = job
         self._result = None  # cache the job result
-        self.job_id = job.job_id()
+        self.job_id = RunningManStr(job.job_id())
         self.mode_id = job.session_id
-        self.backend = self.job.backend().name
         self.instance = job.backend()._instance
 
     def __getattr__(self, attr):
@@ -36,7 +40,7 @@ class RunningManJob:
 
     def __repr__(self):
         job_id = self.job_id
-        backend = self.backend
+        backend = self.job.backend().name
         mode_str = f"{self.mode_id}" if self.mode_id else None
         out_str = f"<RunningManJob('{job_id}', backend='{backend}', "
         if mode_str:
