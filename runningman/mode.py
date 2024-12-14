@@ -14,18 +14,19 @@ from qiskit_ibm_runtime import Session
 
 
 class RunningManMode(Session):
-    """General mode class unifying Batch and Session
-    """
+    """General mode class unifying Batch and Session"""
+
     def __init__(self, mode):
         self.mode = mode
         self.jobs = []
-        self.mode_name = mode.details()['mode']
+        self.mode_name = mode.details()["mode"]
         self.mode_id = self.mode.session_id
         self.backend = None
         if isinstance(mode, RunningManMode):
             self.backend = mode.backend
         else:
             from runningman.backend import RunningManBackend
+
             backend = self.service.backend(mode.backend())
             self.backend = RunningManBackend(backend)
 
@@ -50,10 +51,10 @@ class RunningManMode(Session):
     def __iter__(self):
         self._iter_index = 0
         return self
-    
+
     def __next__(self):
         if self._iter_index < len(self):
             self._iter_index += 1
-            return self.jobs[self._iter_index-1]
+            return self.jobs[self._iter_index - 1]
         else:
             raise StopIteration

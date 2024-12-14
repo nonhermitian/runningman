@@ -115,7 +115,7 @@ class RunningManBackend(IBMBackend):
         if self._mode is not None:
             mode = self._mode.mode
         else:
-            mode =  self.backend
+            mode = self.backend
         return SAMPLER(mode=mode, options=sampler_options)
 
     def get_estimator(self):
@@ -127,7 +127,7 @@ class RunningManBackend(IBMBackend):
         if self._mode is not None:
             mode = self._mode.mode
         else:
-            mode =  self.backend
+            mode = self.backend
         return ESTIMATOR(mode=mode)
 
     def get_execution_options(self):
