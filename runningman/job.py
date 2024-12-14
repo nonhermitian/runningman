@@ -38,11 +38,11 @@ class RunningManJob:
         job_id = self.job_id
         backend = self.backend
         mode_str = f'{self.mode_id}' if self.mode_id else None
-        out_str = f"RunningManJob<job_id='{job_id}', backend='{backend}', "
+        out_str = f"<RunningManJob(job_id='{job_id}', backend='{backend}', "
         if mode_str:
-            out_str += f"mode_id='{mode_str}'>"
+            out_str += f"mode_id='{mode_str}')>"
         else:
-            out_str += f"mode_id={mode_str}>"
+            out_str += f"mode_id={mode_str})>"
         return out_str
 
 

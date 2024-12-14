@@ -38,7 +38,7 @@ class RunningManBackend(IBMBackend):
         return getattr(self.backend, attr)
 
     def __repr__(self):
-        out_str = f"RunningManBackend<name='{self.name}', num_qubits={self.num_qubits}, instance='{self._instance}'>"
+        out_str = f"<RunningManBackend(name='{self.name}', num_qubits={self.num_qubits}, instance='{self._instance}')>"
         return out_str
 
     def set_mode(self, mode, overwrite=False):
