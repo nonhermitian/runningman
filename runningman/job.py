@@ -26,7 +26,7 @@ class RunningManJob:
         self._result = None  # cache the job result
         self.job_id = job.job_id()
         self.mode_id = job.session_id
-        self.backend = self.job.backend()
+        self.backend = self.job.backend().name
         self.instance = job.backend()._instance
 
     def __getattr__(self, attr):
