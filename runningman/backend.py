@@ -171,7 +171,7 @@ class RunningManBackend(IBMBackend):
                     raise KeyError(f"Simulator option {key} is not valid")
                 self._execution_options["simulator"][key] = val
 
-    def set_suppresion_options(self, dynamical_decoupling=None, twirling=None):
+    def set_suppression_options(self, dynamical_decoupling=None, twirling=None):
         """Set the suppression options of the backend
 
         Parameters:
@@ -198,7 +198,7 @@ class RunningManBackend(IBMBackend):
     def reset_options(self):
         """Reset all options to default values"""
         self._execution_options = default_execution_options()
-        self._suppresion_options = default_suppression_options()
+        self._suppression_options = default_suppression_options()
 
     def run(
         self,
@@ -225,4 +225,7 @@ class RunningManBackend(IBMBackend):
         if not isinstance(circuits, Iterable):
             circuits = [circuits]
         job = sampler.run(circuits, shots=shots)
-        return RunningManJob(job)
+        mode_id = None
+        if self._mode:
+            mode_id = self._mode.session_id
+        return RunningManJob(job, mode_id=mode_id)

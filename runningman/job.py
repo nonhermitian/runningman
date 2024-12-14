@@ -21,10 +21,10 @@ class RunningManJob:
     Unlike the Runtime, the results are cached
     """
 
-    def __init__(self, job):
+    def __init__(self, job, mode_id=None):
         self.job = job
         self._result = None  # cache the job result
-        self.executor = None
+        self.mode_id = mode_id
 
     def __getattr__(self, attr):
         if attr in self.__dict__:
@@ -33,9 +33,13 @@ class RunningManJob:
 
     def __repr__(self):
         job_id = self.job.job_id()
-        backend_name = self.job.backend().name
-        executor = self.executor if self.executor else "NA"
-        out_str = f"RunningManJob<job_id='{job_id}', backend_name='{backend_name}', executor='{executor}'>"
+        backend = self.job.backend().name
+        mode_str = f'{self.mode_id}' if self.mode_id else None
+        out_str = f"RunningManJob<job_id='{job_id}', backend='{backend}', "
+        if mode_str:
+            out_str += f"mode_id='{mode_str}'>"
+        else:
+            out_str += f"mode_id={mode_str}>"
         return out_str
 
     def result(self):
@@ -55,9 +59,6 @@ class RunningManJob:
                 res.get_counts = types.MethodType(_get_counts, res)
                 setattr(res, "get_memory", _get_memory)
                 res.get_memory = types.MethodType(_get_memory, res)
-                self.executor = "sampler"
-            else:
-                self.executor = "estimator"
             self._result = res
             return res
 
