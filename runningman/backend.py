@@ -88,7 +88,7 @@ class RunningManBackend(IBMBackend):
 
     def close_mode(self):
         """Close the current backend mode, if any"""
-        if self._mode:
+        if self._mode is not None:
             self._mode.close()
         else:
             raise Exception("No mode to close")
