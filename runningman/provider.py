@@ -10,10 +10,13 @@
 
 """RunningMan provider
 """
-from qiskit_ibm_runtime import QiskitRuntimeService
+from qiskit_ibm_runtime import QiskitRuntimeService, Batch, Session
 
 from runningman.backend import RunningManBackend
 from runningman.job import RunningManJob
+from runningman.mode import RunningManMode
+
+_CHUNK_SIZE = 50
 
 
 class RunningManProvider:
@@ -59,3 +62,40 @@ class RunningManProvider:
         """
         jobs = self.service.jobs(*args, **kwargs)
         return [RunningManJob(job) for job in jobs]
+
+    def mode_from_id(self, mode_id):
+        """Return a RunningManMode from a given ID
+
+        Parameters:
+            mode_id (str): The mode ID
+
+        Returns:
+            RunningManMode: The mode instance
+        """
+        response = self._api_client.session_details(mode_id)
+        mode = response.get("mode")
+        if mode == "batch":
+            temp_mode = Batch.from_id(mode_id, self)
+        elif mode == "dedicated":
+            temp_mode = Session.from_id(mode_id, self)
+        else:
+            raise Exception(f"Invalid mode {mode} returned")
+
+        out = RunningManMode(temp_mode)
+        out.jobs = fetch_mode_jobs(mode_id, self)
+        return out
+
+
+def fetch_mode_jobs(mode_id, provider):
+    """Get the jobs for a given mode"""
+    jobs = []
+    finished = False
+    iter = 0
+    while not finished:
+        temp_jobs = provider.jobs(
+            session_id=mode_id, limit=_CHUNK_SIZE, skip=iter * _CHUNK_SIZE
+        )
+        jobs.extend(temp_jobs)
+        if len(temp_jobs) < _CHUNK_SIZE:
+            finished = True
+    return [RunningManJob(jj) for jj in jobs[::-1]]
