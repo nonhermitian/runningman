@@ -15,16 +15,23 @@ from qiskit.result import Counts
 from qiskit.primitives.containers import SamplerPubResult
 
 
+class RunningManStr(str):
+    def __call__(self):
+        return self
+
+
 class RunningManJob:
     """A wrapper around Sampler jobs that allows for getting counts from backend.run
 
-    Unlike the Runtime, the results are cached
+    Unlike the Runtime, the results are cached by default
     """
 
     def __init__(self, job):
         self.job = job
         self._result = None  # cache the job result
-        self.executor = None
+        self.job_id = RunningManStr(job.job_id())
+        self.mode_id = job.session_id
+        self.instance = job.backend()._instance
 
     def __getattr__(self, attr):
         if attr in self.__dict__:
@@ -32,16 +39,23 @@ class RunningManJob:
         return getattr(self.job, attr)
 
     def __repr__(self):
-        job_id = self.job.job_id()
-        backend_name = self.job.backend().name
-        executor = self.executor if self.executor else "NA"
-        out_str = f"RunningManJob<job_id='{job_id}', backend_name='{backend_name}', executor='{executor}'>"
+        job_id = self.job_id
+        backend = self.job.backend().name
+        mode_str = f"{self.mode_id}" if self.mode_id else None
+        out_str = f"<RunningManJob('{job_id}', backend='{backend}', "
+        if mode_str:
+            out_str += f"mode_id='{mode_str}')>"
+        else:
+            out_str += f"mode_id={mode_str})>"
         return out_str
 
-    def result(self):
+    def result(self, cache=True):
         """Get the result from a job
 
         Adds a `get_counts` and `get_memory` attr for backward compatibility
+
+        Parameters:
+            cache (bool): Cache result, default=True
 
         Returns:
             PrimitiveResult
@@ -55,10 +69,8 @@ class RunningManJob:
                 res.get_counts = types.MethodType(_get_counts, res)
                 setattr(res, "get_memory", _get_memory)
                 res.get_memory = types.MethodType(_get_memory, res)
-                self.executor = "sampler"
-            else:
-                self.executor = "estimator"
-            self._result = res
+            if cache:
+                self._result = res
             return res
 
 

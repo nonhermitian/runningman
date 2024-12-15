@@ -15,6 +15,7 @@ from collections.abc import Iterable
 from qiskit_ibm_runtime import Batch, Session, SamplerV2, EstimatorV2, IBMBackend
 
 from runningman.job import RunningManJob
+from runningman.mode import RunningManMode
 from runningman.options import (
     default_execution_options,
     default_suppression_options,
@@ -38,7 +39,7 @@ class RunningManBackend(IBMBackend):
         return getattr(self.backend, attr)
 
     def __repr__(self):
-        out_str = f"RunningManBackend<name='{self.name}', num_qubits={self.num_qubits}, instance='{self._instance}'>"
+        out_str = f"<RunningManBackend(name='{self.name}', num_qubits={self.num_qubits}, instance='{self._instance}')>"
         return out_str
 
     def set_mode(self, mode, overwrite=False):
@@ -52,26 +53,27 @@ class RunningManBackend(IBMBackend):
             Batch: If mode is a batch
             Session: If mode is a session
         """
-        if self._mode and not overwrite:
+        if self._mode is not None and not overwrite:
             raise Exception(
                 "backend mode is already set.  use overwrite=True or clear the mode"
             )
-        if self._mode:
+        if self._mode is not None:
             self.close_mode()
         if mode == "batch":
             mode = Batch(backend=self.backend)
-            self._mode = mode
+            self._mode = RunningManMode(mode)
         elif mode == "session":
             mode = Session(backend=self.backend)
-            self._mode = mode
+            self._mode = RunningManMode(mode)
         elif isinstance(mode, (Batch, Session)):
             if mode.backend() != self.backend.name:
                 raise Exception(
                     f"Input mode does not target backend {self.backend.name}"
                 )
-            self._mode = mode
+            self._mode = RunningManMode(mode)
         else:
             return getattr(self.backend, mode)
+        self._mode.mode_id
         return self._mode
 
     def get_mode(self):
@@ -86,7 +88,7 @@ class RunningManBackend(IBMBackend):
 
     def close_mode(self):
         """Close the current backend mode, if any"""
-        if self._mode:
+        if self._mode is not None:
             self._mode.close()
         else:
             raise Exception("No mode to close")
@@ -110,9 +112,11 @@ class RunningManBackend(IBMBackend):
         sampler_options = build_sampler_options(
             self.get_execution_options(), self.get_suppression_options()
         )
-        return SAMPLER(
-            mode=self._mode if self._mode else self.backend, options=sampler_options
-        )
+        if self._mode is not None:
+            mode = self._mode.mode
+        else:
+            mode = self.backend
+        return SAMPLER(mode=mode, options=sampler_options)
 
     def get_estimator(self):
         """Return an estimator object that uses the backend and mode
@@ -120,7 +124,11 @@ class RunningManBackend(IBMBackend):
         Returns:
             EstimatorV2: Estimator targeting backend in the current execution mode
         """
-        return ESTIMATOR(mode=self._mode if self._mode else self.backend)
+        if self._mode is not None:
+            mode = self._mode.mode
+        else:
+            mode = self.backend
+        return ESTIMATOR(mode=mode)
 
     def get_execution_options(self):
         """Return the backend's execution options
@@ -171,7 +179,7 @@ class RunningManBackend(IBMBackend):
                     raise KeyError(f"Simulator option {key} is not valid")
                 self._execution_options["simulator"][key] = val
 
-    def set_suppresion_options(self, dynamical_decoupling=None, twirling=None):
+    def set_suppression_options(self, dynamical_decoupling=None, twirling=None):
         """Set the suppression options of the backend
 
         Parameters:
@@ -198,7 +206,7 @@ class RunningManBackend(IBMBackend):
     def reset_options(self):
         """Reset all options to default values"""
         self._execution_options = default_execution_options()
-        self._suppresion_options = default_suppression_options()
+        self._suppression_options = default_suppression_options()
 
     def run(
         self,
@@ -225,4 +233,7 @@ class RunningManBackend(IBMBackend):
         if not isinstance(circuits, Iterable):
             circuits = [circuits]
         job = sampler.run(circuits, shots=shots)
-        return RunningManJob(job)
+        running_job = RunningManJob(job)
+        if self._mode is not None:
+            self._mode.jobs.append(running_job)
+        return running_job
