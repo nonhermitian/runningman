@@ -36,16 +36,15 @@ def test_run_modes():
 
 
 def test_mode_job_storage():
-    """Validate that jobs in a mode are retrieved in the correct order
-    """
+    """Validate that jobs in a mode are retrieved in the correct order"""
     qc = QuantumCircuit(2)
     qc.h(0)
-    qc.cx(0,1)
+    qc.cx(0, 1)
     qc.measure_all()
     trans_qc = transpile(qc, BACKEND)
 
     BACKEND.clear_mode()
-    mode = BACKEND.set_mode('batch')
+    mode = BACKEND.set_mode("batch")
     jobs = []
     for _ in range(5):
         jobs.append(BACKEND.run(trans_qc, shots=2))
@@ -55,16 +54,15 @@ def test_mode_job_storage():
 
 
 def test_mode_job_retrieval():
-    """Validate that jobs in a mode are retrieved in the correct order
-    """
+    """Validate that jobs in a mode are retrieved in the correct order"""
     qc = QuantumCircuit(2)
     qc.h(0)
-    qc.cx(0,1)
+    qc.cx(0, 1)
     qc.measure_all()
     trans_qc = transpile(qc, BACKEND)
 
     BACKEND.clear_mode()
-    mode = BACKEND.set_mode('batch')
+    mode = BACKEND.set_mode("batch")
     for _ in range(5):
         BACKEND.run(trans_qc, shots=2)
     mode2 = PROVIDER.mode_from_id(mode.mode_id)
