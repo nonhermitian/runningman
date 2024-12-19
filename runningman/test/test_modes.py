@@ -33,3 +33,40 @@ def test_run_modes():
     job2 = provider.job(job.job_id())
     assert job2.session_id == mode.session_id
     BACKEND.clear_mode()
+
+
+def test_mode_job_storage():
+    """Validate that jobs in a mode are retrieved in the correct order
+    """
+    qc = QuantumCircuit(2)
+    qc.h(0)
+    qc.cx(0,1)
+    qc.measure_all()
+    trans_qc = transpile(qc, BACKEND)
+
+    BACKEND.clear_mode()
+    mode = BACKEND.set_mode('batch')
+    jobs = []
+    for _ in range(5):
+        jobs.append(BACKEND.run(trans_qc, shots=2))
+
+    for idx, job in enumerate(jobs):
+        assert job.job_id == mode[idx].job_id
+
+
+def test_mode_job_retrieval():
+    """Validate that jobs in a mode are retrieved in the correct order
+    """
+    qc = QuantumCircuit(2)
+    qc.h(0)
+    qc.cx(0,1)
+    qc.measure_all()
+    trans_qc = transpile(qc, BACKEND)
+
+    BACKEND.clear_mode()
+    mode = BACKEND.set_mode('batch')
+    for _ in range(5):
+        BACKEND.run(trans_qc, shots=2)
+    mode2 = PROVIDER.mode_from_id(mode.mode_id)
+    for idx, job in enumerate(mode):
+        assert job.job_id == mode2[idx].job_id
