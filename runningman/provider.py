@@ -98,4 +98,5 @@ def fetch_mode_jobs(mode_id, provider):
         jobs.extend(temp_jobs)
         if len(temp_jobs) < _CHUNK_SIZE:
             finished = True
+        iter += 1
     return [RunningManJob(jj) for jj in jobs[::-1]]
