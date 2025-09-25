@@ -8,8 +8,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""RunningMan options
-"""
+"""RunningMan options"""
 from qiskit_ibm_runtime import SamplerOptions
 
 
@@ -26,7 +25,7 @@ class ExecutionOptions(dict):
         out += "=" * 50 + "\n"
         for key, val in self.items():
             indent = 0
-            out += "\u23F5" + key + "\n"
+            out += "\u23f5" + key + "\n"
             indent = 2
             for item, entry in val.items():
                 out += (
@@ -52,7 +51,7 @@ class SuppressionOptions(dict):
         out += "=" * 50 + "\n"
         for key, val in self.items():
             indent = 0
-            out += "\u23F5" + key + "\n"
+            out += "\u23f5" + key + "\n"
             indent = 2
             for item, entry in val.items():
                 out += (

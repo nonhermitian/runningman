@@ -8,8 +8,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""RunningMan provider
-"""
+"""RunningMan provider"""
 from qiskit_ibm_runtime import QiskitRuntimeService, Batch, Session
 
 from runningman.backend import RunningManBackend
@@ -72,7 +71,8 @@ class RunningManProvider:
         Returns:
             RunningManMode: The mode instance
         """
-        response = self._api_client.session_details(mode_id)
+        crn = self.service.active_instance()
+        response = self.service._api_clients[crn].session_details(mode_id)
         mode = response.get("mode")
         if mode == "batch":
             temp_mode = Batch.from_id(mode_id, self)

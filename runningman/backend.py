@@ -8,8 +8,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""RunningMan backend
-"""
+"""RunningMan backend"""
 import copy
 from collections.abc import Iterable
 from qiskit_ibm_runtime import Batch, Session, SamplerV2, EstimatorV2, IBMBackend
