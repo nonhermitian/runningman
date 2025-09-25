@@ -8,8 +8,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""RunningMan job
-"""
+"""RunningMan job"""
 import types
 from qiskit.result import Counts
 from qiskit.primitives.containers import SamplerPubResult

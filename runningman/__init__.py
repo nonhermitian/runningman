@@ -8,8 +8,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""RunningMan
-"""
+"""RunningMan"""
 
 try:
     from .version import version as __version__
